@@ -31,6 +31,7 @@
 #include <vecmem/memory/cuda/host_memory_resource.hpp>
 #include <vecmem/memory/host_memory_resource.hpp>
 #include <vecmem/utils/cuda/async_copy.hpp>
+#include <vecmem/utils/cuda/copy.hpp>
 
 // System include(s).
 #include <exception>
@@ -79,6 +80,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
 
     traccc::cuda::stream stream;
 
+    vecmem::cuda::copy copy;
     vecmem::cuda::async_copy copy{stream.cudaStream()};
 
     traccc::cuda::clusterization_algorithm ca_cuda(
@@ -90,6 +92,10 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     // performance writer
     traccc::seeding_performance_writer sd_performance_writer(
         traccc::seeding_performance_writer::config{});
+    if (common_opts.check_performance) {
+        sd_performance_writer.add_cache("CPU");
+        sd_performance_writer.add_cache("CUDA");
+    }
 
     traccc::performance::timing_info elapsedTimes;
 
@@ -110,6 +116,28 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
         traccc::seed_collection_types::buffer seeds_cuda_buffer(0, *mr.host);
         traccc::bound_track_parameters_collection_types::buffer
             params_cuda_buffer(0, *mr.host);
+
+        {
+            traccc::performance::timer t("Container instantiation  (cpu)",
+                                         elapsedTimes);
+            // Instantiate host containers/collections
+            traccc::io::cell_reader_output read_out_per_event(mr.host);
+            traccc::clusterization_algorithm::output_type measurements_per_event;
+            traccc::spacepoint_formation::output_type spacepoints_per_event;
+            traccc::seeding_algorithm::output_type seeds;
+            traccc::track_params_estimation::output_type params;
+        }  // stop measuring instantiation timer
+
+        {
+            traccc::performance::timer t("Container instantiation  (cuda)",
+                                         elapsedTimes);
+            // Instantiate cuda containers/collections
+            traccc::spacepoint_collection_types::buffer spacepoints_cuda_buffer(
+                0, *mr.host);
+            traccc::seed_collection_types::buffer seeds_cuda_buffer(0, *mr.host);
+            traccc::bound_track_parameters_collection_types::buffer
+                params_cuda_buffer(0, *mr.host);
+        }  // stop measuring instantiation timer
 
         {
             traccc::performance::timer wall_t("Wall time", elapsedTimes);
@@ -139,6 +167,17 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             traccc::cell_module_collection_types::buffer modules_buffer(
                 modules_per_event.size(), mr.main);
             copy(vecmem::get_data(modules_per_event), modules_buffer);
+
+            {
+                traccc::performance::timer t("Host to device  (Cells, modules)",
+                                             elapsedTimes);
+                traccc::cell_collection_types::buffer cells_buffer(
+                    cells_per_event.size(), mr.main);
+                copy(vecmem::get_data(cells_per_event), cells_buffer);
+                traccc::cell_module_collection_types::buffer modules_buffer(
+                    modules_per_event.size(), mr.main);
+                copy(vecmem::get_data(modules_per_event), modules_buffer);
+            }  // stop measuring H2D timer
 
             {
                 traccc::performance::timer t("Clusterization (cuda)",
@@ -227,12 +266,32 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
         traccc::seed_collection_types::host seeds_cuda;
         traccc::bound_track_parameters_collection_types::host params_cuda;
 
-        copy(spacepoints_cuda_buffer, spacepoints_per_event_cuda)->wait();
-        copy(seeds_cuda_buffer, seeds_cuda)->wait();
-        copy(params_cuda_buffer, params_cuda)->wait();
+        if (run_cpu || i_cfg.check_performance) {
+
+            copy(spacepoints_cuda_buffer, spacepoints_per_event_cuda)->wait();
+            copy(seeds_cuda_buffer, seeds_cuda)->wait();
+            copy(params_cuda_buffer, params_cuda)->wait();
+        }
+
+        {
+            traccc::performance::timer t("Device to host  (spacepoints)",
+                                         elapsedTimes);
+            copy(spacepoints_cuda_buffer, spacepoints_per_event_cuda);
+        }
+
+        {
+            traccc::performance::timer t("Device to host  (seeds)",
+                                         elapsedTimes);
+            copy(seeds_cuda_buffer, seeds_cuda);
+        }
+
+        {
+            traccc::performance::timer t("Device to host  (track params)",
+                                         elapsedTimes);
+            copy(params_cuda_buffer, params_cuda);
+        }
 
         if (run_cpu) {
-
             // Show which event we are currently presenting the results for.
             std::cout << "===>>> Event " << event << " <<<===" << std::endl;
 
@@ -274,6 +333,12 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
             sd_performance_writer.write(
                 vecmem::get_data(seeds_cuda),
                 vecmem::get_data(spacepoints_per_event_cuda), evt_map);
+
+            if (run_cpu) {
+                sd_performance_writer.write(
+                    "CPU", vecmem::get_data(seeds),
+                    vecmem::get_data(spacepoints_per_event), evt_map);
+            }
         }
     }
 
