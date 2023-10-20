@@ -79,7 +79,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
 
     traccc::cuda::stream stream;
 
-    vecmem::cuda::copy copy;
+    // vecmem::cuda::copy copy;
     vecmem::cuda::async_copy copy{stream.cudaStream()};
 
     traccc::cuda::clusterization_algorithm ca_cuda(
@@ -91,10 +91,10 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     // performance writer
     traccc::seeding_performance_writer sd_performance_writer(
         traccc::seeding_performance_writer::config{});
-    if (common_opts.check_performance) {
-        sd_performance_writer.add_cache("CPU");
-        sd_performance_writer.add_cache("CUDA");
-    }
+    // if (common_opts.check_performance) {
+    //     sd_performance_writer.add_cache("CPU");
+    //     sd_performance_writer.add_cache("CUDA");
+    // }
 
     traccc::performance::timing_info elapsedTimes;
 
