@@ -266,7 +266,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
         traccc::seed_collection_types::host seeds_cuda;
         traccc::bound_track_parameters_collection_types::host params_cuda;
 
-        if (run_cpu || i_cfg.check_performance) {
+        if (run_cpu || common_opts.check_performance) {
 
             copy(spacepoints_cuda_buffer, spacepoints_per_event_cuda)->wait();
             copy(seeds_cuda_buffer, seeds_cuda)->wait();
@@ -334,11 +334,11 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                 vecmem::get_data(seeds_cuda),
                 vecmem::get_data(spacepoints_per_event_cuda), evt_map);
 
-            if (run_cpu) {
-                sd_performance_writer.write(
-                    "CPU", vecmem::get_data(seeds),
-                    vecmem::get_data(spacepoints_per_event), evt_map);
-            }
+            // if (run_cpu) {
+            //     sd_performance_writer.write(
+            //         "CPU", vecmem::get_data(seeds),
+            //         vecmem::get_data(spacepoints_per_event), evt_map);
+            // }
         }
     }
 
