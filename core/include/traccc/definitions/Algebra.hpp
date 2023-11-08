@@ -23,7 +23,7 @@
 #include <Eigen/Geometry>
 #endif
 
-namespace Acts {
+namespace traccc {
 
 /// @defgroup acts-algebra-types Vector/matrix types with a common scalar type
 ///
@@ -40,32 +40,32 @@ namespace Acts {
 /// Without a distinct type for symmetric matrices, there is no way to provide
 /// any conditions e.g. square size, for the dynamic-sized case. Consequently,
 /// no dynamic-sized symmetric matrix type is defined. Use the
-/// `ActsDynamicMatrix` instead.
+/// `TracccDynamicMatrix` instead.
 ///
 /// @{
 
 /// Common scalar (floating point type used for the default algebra types.
 ///
 /// Defaults to `double` but can be customized by the user.
-#ifdef ACTS_CUSTOM_SCALARTYPE
-using ActsScalar = ACTS_CUSTOM_SCALARTYPE;
+#ifdef TRACCC_CUSTOM_SCALARTYPE
+using TracccScalar = TRACCC_CUSTOM_SCALARTYPE;
 #else
-using ActsScalar = double;
+using TracccScalar = double;
 #endif
 
 template <unsigned int kSize>
-using ActsVector = Eigen::Matrix<ActsScalar, kSize, 1>;
+using TracccVector = Eigen::Matrix<TracccScalar, kSize, 1>;
 
 template <unsigned int kRows, unsigned int kCols>
-using ActsMatrix = Eigen::Matrix<ActsScalar, kRows, kCols>;
+using TracccMatrix = Eigen::Matrix<TracccScalar, kRows, kCols>;
 
 template <unsigned int kSize>
-using ActsSquareMatrix = Eigen::Matrix<ActsScalar, kSize, kSize>;
+using TracccSquareMatrix = Eigen::Matrix<TracccScalar, kSize, kSize>;
 
-using ActsDynamicVector = Eigen::Matrix<ActsScalar, Eigen::Dynamic, 1>;
+using TracccDynamicVector = Eigen::Matrix<TracccScalar, Eigen::Dynamic, 1>;
 
-using ActsDynamicMatrix =
-    Eigen::Matrix<ActsScalar, Eigen::Dynamic, Eigen::Dynamic>;
+using TracccDynamicMatrix =
+    Eigen::Matrix<TracccScalar, Eigen::Dynamic, Eigen::Dynamic>;
 
 /// @}
 
@@ -78,31 +78,31 @@ using ActsDynamicMatrix =
 /// @{
 
 // coordinate vectors
-using Vector2 = ActsVector<2>;
-using Vector3 = ActsVector<3>;
-using Vector4 = ActsVector<4>;
+using Vector2 = TracccVector<2>;
+using Vector3 = TracccVector<3>;
+using Vector4 = TracccVector<4>;
 
 // square matrices e.g. for coordinate covariance matrices
-using SquareMatrix2 = ActsSquareMatrix<2>;
-using SquareMatrix3 = ActsSquareMatrix<3>;
-using SquareMatrix4 = ActsSquareMatrix<4>;
+using SquareMatrix2 = TracccSquareMatrix<2>;
+using SquareMatrix3 = TracccSquareMatrix<3>;
+using SquareMatrix4 = TracccSquareMatrix<4>;
 
 // pure translation transformations
-using Translation2 = Eigen::Translation<ActsScalar, 2>;
-using Translation3 = Eigen::Translation<ActsScalar, 3>;
+using Translation2 = Eigen::Translation<TracccScalar, 2>;
+using Translation3 = Eigen::Translation<TracccScalar, 3>;
 
 // linear (rotation) matrices
-using RotationMatrix2 = ActsMatrix<2, 2>;
-using RotationMatrix3 = ActsMatrix<3, 3>;
+using RotationMatrix2 = TracccMatrix<2, 2>;
+using RotationMatrix3 = TracccMatrix<3, 3>;
 
 // pure rotation defined by a rotation angle around a rotation axis
-using AngleAxis3 = Eigen::AngleAxis<ActsScalar>;
+using AngleAxis3 = Eigen::AngleAxis<TracccScalar>;
 
 // combined affine transformations. types are chosen for better data alignment:
 // - 2d affine compact stored as 2x3 matrix
 // - 3d affine stored as 4x4 matrix
-using Transform2 = Eigen::Transform<ActsScalar, 2, Eigen::AffineCompact>;
-using Transform3 = Eigen::Transform<ActsScalar, 3, Eigen::Affine>;
+using Transform2 = Eigen::Transform<TracccScalar, 2, Eigen::AffineCompact>;
+using Transform3 = Eigen::Transform<TracccScalar, 3, Eigen::Affine>;
 
 /// @}
 

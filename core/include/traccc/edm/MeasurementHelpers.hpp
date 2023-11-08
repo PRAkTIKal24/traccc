@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/Utilities/Helpers.hpp"
+#include "traccc/definitions/TrackParametrization.hpp"
+#include "traccc/utils/Helpers.hpp"
 
 #include <cstddef>
 
-namespace Acts {
+namespace traccc {
 
 namespace detail {
 /// Helper functor for @c visit_measurement. This is the actual functor given
@@ -69,4 +69,4 @@ auto visit_measurement(size_t dim, L&& lambda) {
   return template_switch_lambda<1, eBoundSize>(dim, lambda);
 }
 
-}  // namespace Acts
+}  // namespace

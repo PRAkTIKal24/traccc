@@ -24,4 +24,4 @@ std::unordered_map<int, std::vector<int>> clusterDuplicateTracks(
     const std::multimap<int, std::pair<int, std::vector<int>>>& trackMap);
 
 }  // namespace detail
-}  // namespace Acts
+}  // namespace
