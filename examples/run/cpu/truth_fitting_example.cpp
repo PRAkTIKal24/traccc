@@ -8,15 +8,12 @@
 // Project include(s).
 #include "traccc/definitions/common.hpp"
 #include "traccc/definitions/primitives.hpp"
-#include "traccc/efficiency/finding_performance_writer.hpp"
-#include "traccc/finding/finding_algorithm.hpp"
 #include "traccc/fitting/fitting_algorithm.hpp"
 #include "traccc/fitting/kalman_filter/kalman_fitter.hpp"
 #include "traccc/io/read_geometry.hpp"
 #include "traccc/io/read_measurements.hpp"
 #include "traccc/io/utils.hpp"
 #include "traccc/options/common_options.hpp"
-#include "traccc/options/finding_input_options.hpp"
 #include "traccc/options/handle_argument_errors.hpp"
 #include "traccc/options/propagation_options.hpp"
 #include "traccc/resolution/fitting_performance_writer.hpp"
@@ -42,9 +39,29 @@
 using namespace traccc;
 namespace po = boost::program_options;
 
-int seq_run(const traccc::finding_input_config& i_cfg,
-            const traccc::propagation_options<scalar>& propagation_opts,
-            const traccc::common_options& common_opts) {
+// The main routine
+//
+int main(int argc, char* argv[]) {
+    // Set up the program options
+    po::options_description desc("Allowed options");
+
+    // Add options
+    desc.add_options()("help,h", "Give some help with the program's options");
+    traccc::common_options common_opts(desc);
+    traccc::propagation_options<scalar> propagation_opts(desc);
+
+    po::variables_map vm;
+    po::store(po::parse_command_line(argc, argv, desc), vm);
+
+    // Check errors
+    traccc::handle_argument_errors(vm, desc);
+
+    // Read options
+    common_opts.read(vm);
+    propagation_opts.read(vm);
+
+    std::cout << "Running " << argv[0] << " " << common_opts.input_directory
+              << " " << common_opts.events << std::endl;
 
     /// Type declarations
     using host_detector_type = detray::detector<detray::default_metadata,
@@ -63,8 +80,6 @@ int seq_run(const traccc::finding_input_config& i_cfg,
     vecmem::host_memory_resource host_mr;
 
     // Performance writer
-    traccc::finding_performance_writer find_performance_writer(
-        traccc::finding_performance_writer::config{});
     traccc::fitting_performance_writer fit_performance_writer(
         traccc::fitting_performance_writer::config{});
 
@@ -87,34 +102,18 @@ int seq_run(const traccc::finding_input_config& i_cfg,
     const auto [host_det, names] =
         detray::io::read_detector<host_detector_type>(host_mr, reader_cfg);
 
-    const auto surface_transforms = traccc::io::alt_read_geometry(host_det);
-
     /*****************************
      * Do the reconstruction
      *****************************/
 
-    // Standard deviations for seed track parameters
-    static constexpr std::array<traccc::scalar, traccc::e_bound_size> stddevs =
-        {1e-4 * detray::unit<traccc::scalar>::mm,
-         1e-4 * detray::unit<traccc::scalar>::mm,
-         1e-3,
-         1e-3,
-         1e-4 / detray::unit<traccc::scalar>::GeV,
-         1e-4 * detray::unit<traccc::scalar>::ns};
-
-    // Finding algorithm configuration
-    typename traccc::finding_algorithm<rk_stepper_type,
-                                       host_navigator_type>::config_type cfg;
-    cfg.min_track_candidates_per_track = i_cfg.track_candidates_range[0];
-    cfg.max_track_candidates_per_track = i_cfg.track_candidates_range[1];
-    cfg.constrained_step_size = propagation_opts.step_constraint;
-
-    // few tracks (~1 out of 1000 tracks) are missed when chi2_max = 15
-    cfg.chi2_max = 30.f;
-
-    // Finding algorithm object
-    traccc::finding_algorithm<rk_stepper_type, host_navigator_type>
-        host_finding(cfg);
+    /// Standard deviations for seed track parameters
+    static constexpr std::array<scalar, e_bound_size> stddevs = {
+        0.03 * detray::unit<scalar>::mm,
+        0.03 * detray::unit<scalar>::mm,
+        0.017,
+        0.017,
+        0.01 / detray::unit<scalar>::GeV,
+        1 * detray::unit<scalar>::ns};
 
     // Fitting algorithm object
     typename traccc::fitting_algorithm<host_fitter_type>::config_type fit_cfg;
@@ -136,30 +135,9 @@ int seq_run(const traccc::finding_input_config& i_cfg,
         traccc::track_candidate_container_types::host truth_track_candidates =
             evt_map2.generate_truth_candidates(sg, host_mr);
 
-        // Prepare truth seeds
-        traccc::bound_track_parameters_collection_types::host seeds(&host_mr);
-        const unsigned int n_tracks = truth_track_candidates.size();
-        for (unsigned int i_trk = 0; i_trk < n_tracks; i_trk++) {
-            seeds.push_back(truth_track_candidates.at(i_trk).header);
-        }
-
-        // Read measurements
-        traccc::io::measurement_reader_output meas_read_out(&host_mr);
-        traccc::io::read_measurements(meas_read_out, event,
-                                      common_opts.input_directory,
-                                      traccc::data_format::csv);
-        traccc::measurement_collection_types::host& measurements_per_event =
-            meas_read_out.measurements;
-
-        // Run finding
-        auto track_candidates =
-            host_finding(host_det, field, measurements_per_event, seeds);
-
-        std::cout << "Number of found tracks: " << track_candidates.size()
-                  << std::endl;
-
         // Run fitting
-        auto track_states = host_fitting(host_det, field, track_candidates);
+        auto track_states =
+            host_fitting(host_det, field, truth_track_candidates);
 
         std::cout << "Number of fitted tracks: " << track_states.size()
                   << std::endl;
@@ -167,8 +145,6 @@ int seq_run(const traccc::finding_input_config& i_cfg,
         const unsigned int n_fitted_tracks = track_states.size();
 
         if (common_opts.check_performance) {
-            find_performance_writer.write(traccc::get_data(track_candidates),
-                                          evt_map2);
 
             for (unsigned int i = 0; i < n_fitted_tracks; i++) {
                 const auto& trk_states_per_track = track_states.at(i).items;
@@ -182,38 +158,8 @@ int seq_run(const traccc::finding_input_config& i_cfg,
     }
 
     if (common_opts.check_performance) {
-        find_performance_writer.finalize();
         fit_performance_writer.finalize();
     }
 
     return 1;
-}
-
-// The main routine
-//
-int main(int argc, char* argv[]) {
-    // Set up the program options
-    po::options_description desc("Allowed options");
-
-    // Add options
-    desc.add_options()("help,h", "Give some help with the program's options");
-    traccc::common_options common_opts(desc);
-    traccc::finding_input_config finding_input_cfg(desc);
-    traccc::propagation_options<scalar> propagation_opts(desc);
-
-    po::variables_map vm;
-    po::store(po::parse_command_line(argc, argv, desc), vm);
-
-    // Check errors
-    traccc::handle_argument_errors(vm, desc);
-
-    // Read options
-    common_opts.read(vm);
-    finding_input_cfg.read(vm);
-    propagation_opts.read(vm);
-
-    std::cout << "Running " << argv[0] << " " << common_opts.input_directory
-              << " " << common_opts.events << std::endl;
-
-    return seq_run(finding_input_cfg, propagation_opts, common_opts);
 }

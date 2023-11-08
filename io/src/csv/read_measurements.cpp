@@ -19,7 +19,7 @@
 namespace traccc::io::csv {
 
 void read_measurements(measurement_reader_output& out,
-                       std::string_view filename) {
+                       std::string_view filename, const bool do_sort) {
 
     // Construct the measurement reader object.
     auto reader = make_measurement_reader(filename);
@@ -80,6 +80,11 @@ void read_measurements(measurement_reader_output& out,
         meas.module_link = link;
 
         result_measurements.push_back(meas);
+    }
+
+    if (do_sort) {
+        std::sort(result_measurements.begin(), result_measurements.end(),
+                  measurement_sort_comp());
     }
 }
 

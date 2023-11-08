@@ -1,6 +1,6 @@
 /** TRACCC library, part of the ACTS project (R&D line)
  *
- * (c) 2022-2023 CERN for the benefit of the ACTS project
+ * (c) 2023 CERN for the benefit of the ACTS project
  *
  * Mozilla Public License Version 2.0
  */
@@ -14,16 +14,14 @@
 #include "traccc/options/options.hpp"
 #include "traccc/options/particle_gen_options.hpp"
 #include "traccc/options/propagation_options.hpp"
-#include "traccc/options/telescope_detector_options.hpp"
 #include "traccc/simulation/measurement_smearer.hpp"
 #include "traccc/simulation/simulator.hpp"
 #include "traccc/simulation/smearing_writer.hpp"
 
 // detray include(s).
 #include "detray/detectors/bfield.hpp"
-#include "detray/detectors/create_telescope_detector.hpp"
+#include "detray/detectors/create_wire_chamber.hpp"
 #include "detray/io/common/detector_writer.hpp"
-#include "detray/masks/unbounded.hpp"
 #include "detray/simulation/event_generator/track_generators.hpp"
 
 // VecMem include(s).
@@ -37,8 +35,7 @@ namespace po = boost::program_options;
 
 int simulate(std::string output_directory, unsigned int events,
              const traccc::particle_gen_options<scalar>& pg_opts,
-             const traccc::propagation_options<scalar>& propagation_opts,
-             const traccc::telescope_detector_options<scalar>& telescope_opts) {
+             const traccc::propagation_options<scalar>& propagation_opts) {
 
     // Use deterministic random number generator for testing
     using uniform_gen_t =
@@ -49,44 +46,25 @@ int simulate(std::string output_directory, unsigned int events,
     vecmem::host_memory_resource host_mr;
 
     /*****************************
-     * Build a telescope geometry
+     * Build a wire chamber
      *****************************/
 
-    // Plane alignment direction (aligned to z-axis)
-    detray::detail::ray<transform3> traj{{0, 0, 0}, 0, {0, 0, 1}, -1};
-    // Position of planes (in mm unit)
-    std::vector<scalar> plane_positions;
-
-    for (unsigned int i = 0; i < telescope_opts.n_planes; i++) {
-        plane_positions.push_back((i + 1) * telescope_opts.spacing);
-    }
+    // Detector type
+    using detector_type = detray::detector<>;
 
     // B field value and its type
+    // @TODO: Set B field as argument
     using b_field_t = covfie::field<detray::bfield::const_bknd_t>;
     const vector3 B{0, 0, 2 * detray::unit<scalar>::T};
     auto field = detray::bfield::create_const_field(B);
 
-    // Set material and thickness
-    detray::material<scalar> mat;
-    if (!telescope_opts.empty_material) {
-        mat = detray::silicon<scalar>();
-    } else {
-        mat = detray::vacuum<scalar>();
-    }
+    // Set Configuration
+    detray::wire_chamber_config wire_chamber_cfg{};
+    wire_chamber_cfg.n_layers(20u);
 
-    const scalar thickness = telescope_opts.thickness;
-
-    // Use rectangle surfaces
-    detray::mask<detray::rectangle2D<>> rectangle{
-        0u, telescope_opts.half_length, telescope_opts.half_length};
-
-    detray::tel_det_config<> tel_cfg{rectangle};
-    tel_cfg.positions(plane_positions);
-    tel_cfg.module_material(mat);
-    tel_cfg.mat_thickness(thickness);
-    tel_cfg.pilot_track(traj);
-
-    const auto [det, name_map] = create_telescope_detector(host_mr, tel_cfg);
+    // Create the toy geometry
+    const auto [det, name_map] =
+        detray::create_wire_chamber(host_mr, wire_chamber_cfg);
 
     /***************************
      * Generate simulation data
@@ -107,11 +85,9 @@ int simulate(std::string output_directory, unsigned int events,
 
     // Smearing value for measurements
     traccc::measurement_smearer<transform3> meas_smearer(
-        telescope_opts.smearing, telescope_opts.smearing);
+        50 * detray::unit<scalar>::um, 50 * detray::unit<scalar>::um);
 
     // Type declarations
-    using detector_type = decltype(det);
-    using generator_type = decltype(generator);
     using writer_type =
         traccc::smearing_writer<traccc::measurement_smearer<transform3>>;
 
@@ -155,7 +131,6 @@ int main(int argc, char* argv[]) {
                        "number of events");
     traccc::particle_gen_options<scalar> pg_opts(desc);
     traccc::propagation_options<scalar> propagation_opts(desc);
-    traccc::telescope_detector_options<scalar> telescope_opts(desc);
 
     po::variables_map vm;
     po::store(po::parse_command_line(argc, argv, desc), vm);
@@ -168,11 +143,9 @@ int main(int argc, char* argv[]) {
     auto events = vm["events"].as<unsigned int>();
     pg_opts.read(vm);
     propagation_opts.read(vm);
-    telescope_opts.read(vm);
 
     std::cout << "Running " << argv[0] << " " << output_directory << " "
               << events << std::endl;
 
-    return simulate(output_directory, events, pg_opts, propagation_opts,
-                    telescope_opts);
+    return simulate(output_directory, events, pg_opts, propagation_opts);
 }
