@@ -88,17 +88,17 @@ traccc_add_library( traccc_core core TYPE SHARED
   "include/traccc/seeding/seed_finding.hpp"
   "src/seeding/seed_finding.cpp"
   "include/traccc/seeding/spacepoint_binning.hpp"
-  "src/seeding/spacepoint_binning.cpp" 
-  # Track fitting algorithmic code.  
-  "include/traccc/TrackFinding/detail/AmbiguityTrackClustering.hpp"
-  "include/traccc/TrackFinding/CombinatorialKalmanFilter.hpp"
-  "include/traccc/TrackFinding/CombinatorialKalmanFilterError.hpp"
-  "include/traccc/TrackFinding/MeasurementSelector.hpp"
-  "include/traccc/TrackFinding/SourceLinkAccessorConcept.hpp"
-  "include/traccc/TrackFinding/TrackSelector.hpp"
-  "src/TrackFinding/CombinatorialKalmanFilterError.cpp"
-  "src/TrackFinding/AmbiguityTrackClustering.cpp"
-  "src/TrackFinding/MeasurementSelector.cpp" )
+  "src/seeding/spacepoint_binning.cpp"
+  # Track fitting algorithmic code.
+ "include/traccc/TrackFinding/detail/AmbiguityTrackClustering.hpp"
+ "include/traccc/TrackFinding/CombinatorialKalmanFilter.hpp"
+ "include/traccc/TrackFinding/CombinatorialKalmanFilterError.hpp"
+ "include/traccc/TrackFinding/MeasurementSelector.hpp"
+ "include/traccc/TrackFinding/SourceLinkAccessorConcept.hpp"
+ "include/traccc/TrackFinding/TrackSelector.hpp"
+ "src/TrackFinding/CombinatorialKalmanFilterError.cpp"
+ "src/TrackFinding/AmbiguityTrackClustering.cpp"
+ "src/TrackFinding/MeasurementSelector.cpp" )
 target_link_libraries( traccc_core
   PUBLIC Eigen3::Eigen vecmem::core detray::core traccc::Thrust
          traccc::algebra )

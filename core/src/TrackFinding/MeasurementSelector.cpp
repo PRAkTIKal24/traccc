@@ -6,14 +6,14 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "Acts/TrackFinding/MeasurementSelector.hpp"
+#include "traccc/TrackFinding/MeasurementSelector.hpp"
 
-#include "Acts/Definitions/Algebra.hpp"
-#include "Acts/EventData/MeasurementHelpers.hpp"
+#include "traccc/definitions/Algebra.hpp"
+#include "traccc/edm/MeasurementHelpers.hpp"
 
 #include <algorithm>
 
-namespace Acts {
+namespace traccc {
 
 double MeasurementSelector::calculateChi2(
     double* fullCalibrated, double* fullCalibratedCovariance,
