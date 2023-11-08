@@ -11,7 +11,7 @@
 #include <system_error>
 #include <type_traits>
 
-namespace Acts {
+namespace traccc {
 
 enum class CombinatorialKalmanFilterError {
   // ensure all values are non-zero
@@ -22,13 +22,13 @@ enum class CombinatorialKalmanFilterError {
   PropagationReachesMaxSteps,
 };
 
-std::error_code make_error_code(Acts::CombinatorialKalmanFilterError e);
+std::error_code make_error_code(traccc::CombinatorialKalmanFilterError e);
 
-}  // namespace Acts
+}  // namespace traccc
 
 namespace std {
 // register with STL
 template <>
-struct is_error_code_enum<Acts::CombinatorialKalmanFilterError>
+struct is_error_code_enum<traccc::CombinatorialKalmanFilterError>
     : std::true_type {};
 }  // namespace std
