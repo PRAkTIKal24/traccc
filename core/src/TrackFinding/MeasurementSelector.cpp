@@ -33,7 +33,7 @@ double MeasurementSelector::calculateChi2(
     typename TrackStateTraits<kMeasurementSize, true>::MeasurementCovariance
         calibratedCovariance{fullCalibratedCovariance};
 
-    using ParametersVector = ActsVector<kMeasurementSize>;
+    using ParametersVector = TracccVector<kMeasurementSize>;
 
     // Take the projector (measurement mapping function)
     const auto H =
@@ -52,4 +52,4 @@ double MeasurementSelector::calculateChi2(
   });
 }
 
-}  // namespace Acts
+}  // namespace

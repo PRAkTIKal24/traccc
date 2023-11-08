@@ -8,16 +8,16 @@
 
 #pragma once
 
-#include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/EventData/Measurement.hpp"
-#include "Acts/EventData/MeasurementHelpers.hpp"
-#include "Acts/EventData/MultiTrajectory.hpp"
-#include "Acts/EventData/TrackParameters.hpp"
-#include "Acts/Geometry/GeometryHierarchyMap.hpp"
-#include "Acts/TrackFinding/CombinatorialKalmanFilterError.hpp"
-#include "Acts/Utilities/Logger.hpp"
-#include "Acts/Utilities/Result.hpp"
-#include "Acts/Utilities/TypeTraits.hpp"
+#include "traccc/definitions/TrackParametrization.hpp"
+#include "traccc/edm/MeasurementActs.hpp"
+#include "traccc/edm/MeasurementHelpers.hpp"
+#include "traccc/edm/MultiTrajectory.hpp"
+#include "traccc/edm/TrackParameters.hpp"
+#include "traccc/geometry/GeometryHierarchyMap.hpp"
+#include "traccc/TrackFinding/CombinatorialKalmanFilterError.hpp"
+#include "traccc/utils/Logger.hpp"
+#include "traccc/utils/Result.hpp"
+#include "traccc/utils/TypeTraits.hpp"
 
 #include <cassert>
 #include <cstddef>
@@ -26,7 +26,7 @@
 #include <utility>
 #include <vector>
 
-namespace Acts {
+namespace traccc {
 
 /// Selection cuts for associating measurements with predicted track
 /// parameters on a surface.
@@ -58,7 +58,7 @@ class MeasurementSelector {
   /// Different components on the geometry can require different cut settings.
   /// The configuration must either contain explicit settings for all geometry
   /// components that are used or contain a global default.
-  using Config = Acts::GeometryHierarchyMap<MeasurementSelectorCuts>;
+  using Config = traccc::GeometryHierarchyMap<MeasurementSelectorCuts>;
 
   /// @brief Default constructor
   MeasurementSelector() = default;
@@ -209,7 +209,7 @@ class MeasurementSelector {
   template <typename traj_t, typename cut_value_t>
   static cut_value_t VariableCut(
       const typename traj_t::TrackStateProxy& trackState,
-      const Acts::MeasurementSelector::Config::Iterator selector,
+      const traccc::MeasurementSelector::Config::Iterator selector,
       const std::vector<cut_value_t>& cuts, const Logger& logger) {
     const auto& etaBins = selector->etaBins;
     if (etaBins.empty()) {
@@ -244,4 +244,4 @@ class MeasurementSelector {
   Config m_config;
 };
 
-}  // namespace Acts
+}  // namespace
