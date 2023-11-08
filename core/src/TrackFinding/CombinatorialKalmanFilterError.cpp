@@ -6,7 +6,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include "Acts/TrackFinding/CombinatorialKalmanFilterError.hpp"
+#include "traccc/TrackFinding/CombinatorialKalmanFilterError.hpp"
 
 #include <string>
 
@@ -21,7 +21,7 @@ class CombinatorialKalmanFilterErrorCategory : public std::error_category {
 
   // Return what each enum means in text.
   std::string message(int c) const final {
-    using Acts::CombinatorialKalmanFilterError;
+    using traccc::CombinatorialKalmanFilterError;
 
     switch (static_cast<CombinatorialKalmanFilterError>(c)) {
       case CombinatorialKalmanFilterError::UpdateFailed:
@@ -43,7 +43,7 @@ class CombinatorialKalmanFilterErrorCategory : public std::error_category {
 
 }  // namespace
 
-std::error_code Acts::make_error_code(Acts::CombinatorialKalmanFilterError e) {
+std::error_code traccc::make_error_code(traccc::CombinatorialKalmanFilterError e) {
   static CombinatorialKalmanFilterErrorCategory c;
   return {static_cast<int>(e), c};
 }
