@@ -10,7 +10,7 @@
 
 #include <iterator>
 
-std::unordered_map<int, std::vector<int>> Acts::detail::clusterDuplicateTracks(
+std::unordered_map<int, std::vector<int>> traccc::detail::clusterDuplicateTracks(
     const std::multimap<int, std::pair<int, std::vector<int>>>& trackMap) {
   // Unordered map associating a vector with all the track ID of a cluster to
   // the ID of the first track of the cluster
