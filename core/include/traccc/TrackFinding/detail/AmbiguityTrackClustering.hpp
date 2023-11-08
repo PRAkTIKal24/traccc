@@ -13,7 +13,7 @@
 #include <utility>
 #include <vector>
 
-namespace Acts {
+namespace traccc {
 namespace detail {
 
 /// Clusterise tracks based on shared hits
