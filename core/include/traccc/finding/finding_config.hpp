@@ -16,13 +16,13 @@ namespace traccc {
 template <typename scalar_t>
 struct finding_config {
     /// @NOTE: This paramter might be removed
-    unsigned int max_num_branches_per_seed = 100;
+    unsigned int max_num_branches_per_seed = 10;
 
     /// Maximum number of branches per surface
     unsigned int max_num_branches_per_surface = 10;
 
     /// Min/Max number of track candidates per track
-    unsigned int min_track_candidates_per_track = 3;
+    unsigned int min_track_candidates_per_track = 2;
     unsigned int max_track_candidates_per_track = 30;
 
     /// Minimum step length that track should make to reach the next surface. It
