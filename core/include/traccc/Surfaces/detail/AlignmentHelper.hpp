@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include "Acts/Definitions/Algebra.hpp"
+#include "traccc/definitions/Algebra.hpp"
 
 #include <tuple>
 #include <utility>
 #include <vector>
 
-namespace Acts {
+namespace traccc {
 
 namespace detail {
 
@@ -36,4 +36,4 @@ RotationToAxes rotationToLocalAxesDerivative(const RotationMatrix3& rotation);
 
 }  // namespace detail
 
-}  // namespace Acts
+}  // namespace

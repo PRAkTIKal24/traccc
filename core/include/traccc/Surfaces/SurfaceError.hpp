@@ -11,19 +11,19 @@
 #include <system_error>
 #include <type_traits>
 
-namespace Acts {
+namespace traccc {
 
 enum class SurfaceError {
   // ensure all values are non-zero
   GlobalPositionNotOnSurface = 1,
 };
 
-std::error_code make_error_code(Acts::SurfaceError e);
+std::error_code make_error_code(traccc::SurfaceError e);
 
-}  // namespace Acts
+}  // namespace
 
 namespace std {
 // register with STL
 template <>
-struct is_error_code_enum<Acts::SurfaceError> : std::true_type {};
+struct is_error_code_enum<traccc::SurfaceError> : std::true_type {};
 }  // namespace std

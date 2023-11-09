@@ -8,13 +8,13 @@
 
 #pragma once
 
-#include "Acts/Definitions/Algebra.hpp"
-#include "Acts/Definitions/Tolerance.hpp"
-#include "Acts/Definitions/TrackParametrization.hpp"
-#include "Acts/Geometry/GeometryContext.hpp"
-#include "Acts/Utilities/Result.hpp"
+#include "traccc/definitions/Algebra.hpp"
+#include "traccc/definitions/Tolerance.hpp"
+#include "traccc/definitions/TrackParametrization.hpp"
+#include "traccc/geometry/GeometryContext.hpp"
+#include "traccc/utils/Result.hpp"
 
-namespace Acts {
+namespace traccc {
 
 class Surface;
 
@@ -30,7 +30,7 @@ namespace detail {
 /// @return Bound track parameters vector on the given surface
 Result<BoundVector> transformFreeToBoundParameters(
     const FreeVector& freeParams, const Surface& surface,
-    const GeometryContext& geoCtx, ActsScalar tolerance = s_onSurfaceTolerance);
+    const GeometryContext& geoCtx, TracccScalar tolerance = s_onSurfaceTolerance);
 
 /// Convert position and direction to bound track parameters.
 ///
@@ -44,9 +44,9 @@ Result<BoundVector> transformFreeToBoundParameters(
 ///
 /// @return Equivalent bound parameters vector on the given surface
 Result<BoundVector> transformFreeToBoundParameters(
-    const Vector3& position, ActsScalar time, const Vector3& direction,
-    ActsScalar qOverP, const Surface& surface, const GeometryContext& geoCtx,
-    ActsScalar tolerance = s_onSurfaceTolerance);
+    const Vector3& position, TracccScalar time, const Vector3& direction,
+    TracccScalar qOverP, const Surface& surface, const GeometryContext& geoCtx,
+    TracccScalar tolerance = s_onSurfaceTolerance);
 
 /// Convert direction to curvilinear track parameters.
 ///
@@ -58,9 +58,9 @@ Result<BoundVector> transformFreeToBoundParameters(
 /// @note The parameters are assumed to be defined at the origin of the
 ///       curvilinear frame derived from the direction vector. The local
 ///       coordinates are zero by construction.
-BoundVector transformFreeToCurvilinearParameters(ActsScalar time,
+BoundVector transformFreeToCurvilinearParameters(TracccScalar time,
                                                  const Vector3& direction,
-                                                 ActsScalar qOverP);
+                                                 TracccScalar qOverP);
 
 /// Convert direction angles to curvilinear track parameters.
 ///
@@ -73,10 +73,10 @@ BoundVector transformFreeToCurvilinearParameters(ActsScalar time,
 /// @note The parameters are assumed to be defined at the origin of the
 ///       curvilinear frame derived from the direction angles. The local
 ///       coordinates are zero by construction.
-BoundVector transformFreeToCurvilinearParameters(ActsScalar time,
-                                                 ActsScalar phi,
-                                                 ActsScalar theta,
-                                                 ActsScalar qOverP);
+BoundVector transformFreeToCurvilinearParameters(TracccScalar time,
+                                                 TracccScalar phi,
+                                                 TracccScalar theta,
+                                                 TracccScalar qOverP);
 
 }  // namespace detail
-}  // namespace Acts
+}  // namespace

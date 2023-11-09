@@ -16,14 +16,14 @@
 #include "traccc/edm/TrackStateType.hpp"
 #include "traccc/edm/Types.hpp"
 #include "traccc/Surfaces/Surface.hpp"
-#include "traccc/Utilities/HashedString.hpp"
+#include "traccc/utils/HashedString.hpp"
 
 #include <utility>
 
-#if defined(ACTS_CONCEPTS_SUPPORTED)
+#if defined(TRACCC_CONCEPTS_SUPPORTED)
 #include <concepts>
 
-namespace Acts {
+namespace traccc {
 
 namespace detail {
 using Parameters = Eigen::Map<BoundVector>;
@@ -32,11 +32,11 @@ using Covariance = Eigen::Map<BoundMatrix>;
 using ConstParameters = Eigen::Map<const BoundVector>;
 using ConstCovariance = Eigen::Map<const BoundMatrix>;
 
-using Measurement = Eigen::Map<ActsVector<2>>;
-using MeasurementCovariance = Eigen::Map<ActsSquareMatrix<2>>;
+using Measurement = Eigen::Map<TracccVector<2>>;
+using MeasurementCovariance = Eigen::Map<TracccSquareMatrix<2>>;
 
-using ConstMeasurement = Eigen::Map<const ActsVector<2>>;
-using ConstMeasurementCovariance = Eigen::Map<const ActsSquareMatrix<2>>;
+using ConstMeasurement = Eigen::Map<const TracccVector<2>>;
+using ConstMeasurementCovariance = Eigen::Map<const TracccSquareMatrix<2>>;
 
 using DynamicMeasurement =
     Eigen::Map<Eigen::Matrix<Covariance::Scalar, Eigen::Dynamic, 1,
@@ -192,7 +192,7 @@ concept MutableTrackStateProxyConcept = TrackStateProxyConcept<T> &&
              TrackIndexType index, std::shared_ptr<const Surface> surface,
              Eigen::Matrix<double, 3, 6> projector,
              ProjectorBitset projectorBitset, SourceLink sl,
-             Acts::Measurement<BoundIndices, 2> meas, std::size_t measdim) {
+             traccc::Measurement<BoundIndices, 2> meas, std::size_t measdim) {
   {v.shareFrom(mask, mask)};
 
   {v.shareFrom(std::declval<typename T::Trajectory::ConstTrackStateProxy>(),
@@ -250,5 +250,5 @@ concept MutableTrackStateProxyConcept = TrackStateProxyConcept<T> &&
 
   { v.typeFlags() } -> std::same_as<TrackStateType>;
 };
-}  // namespace Acts
+}  // namespace
 #endif

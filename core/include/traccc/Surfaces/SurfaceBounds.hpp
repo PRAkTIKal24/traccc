@@ -7,12 +7,12 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #pragma once
-#include "Acts/Definitions/Algebra.hpp"
-#include "Acts/Surfaces/BoundaryCheck.hpp"
+#include "traccc/definitions/Algebra.hpp"
+#include "traccc/Surfaces/BoundaryCheck.hpp"
 
 #include <ostream>
 
-namespace Acts {
+namespace traccc {
 
 /// @class SurfaceBounds
 ///
@@ -89,4 +89,4 @@ inline std::ostream& operator<<(std::ostream& os, const SurfaceBounds& sb) {
   return sb.toStream(os);
 }
 
-}  // namespace Acts
+}  // namespace

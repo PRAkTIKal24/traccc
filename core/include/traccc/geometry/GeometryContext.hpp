@@ -25,6 +25,6 @@ namespace traccc {
 
 using GeometryContext = ContextType;
 
-}  // namespace Acts
+}  // namespace
 
 #endif

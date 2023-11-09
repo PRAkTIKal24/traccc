@@ -8,11 +8,11 @@
 
 #pragma once
 
-#include "Acts/Surfaces/SurfaceBounds.hpp"
+#include "traccc/Surfaces/SurfaceBounds.hpp"
 
 #include <vector>
 
-namespace Acts {
+namespace traccc {
 
 /// Forward declare rectangle bounds as boundary box
 class RectangleBounds;
@@ -41,4 +41,4 @@ class PlanarBounds : public SurfaceBounds {
   virtual const RectangleBounds& boundingBox() const = 0;
 };
 
-}  // namespace Acts
+}  // namespace

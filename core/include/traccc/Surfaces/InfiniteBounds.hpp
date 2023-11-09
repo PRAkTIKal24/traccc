@@ -7,10 +7,10 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 #pragma once
-#include "Acts/Definitions/Algebra.hpp"
-#include "Acts/Surfaces/SurfaceBounds.hpp"
+#include "traccc/definitions/Algebra.hpp"
+#include "traccc/Surfaces/SurfaceBounds.hpp"
 
-namespace Acts {
+namespace traccc {
 
 /// @class InfiniteBounds
 ///
@@ -41,11 +41,11 @@ class InfiniteBounds : public SurfaceBounds {
 
   /// Output Method for std::ostream
   std::ostream& toStream(std::ostream& os) const final {
-    os << "Acts::InfiniteBounds ... boundless surface" << std::endl;
+    os << "traccc::InfiniteBounds ... boundless surface" << std::endl;
     return os;
   }
 };
 
 static const InfiniteBounds s_noBounds{};
 
-}  // namespace Acts
+}  // namespace
