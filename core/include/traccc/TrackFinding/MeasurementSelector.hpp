@@ -87,7 +87,7 @@ class MeasurementSelector {
         typename std::vector<typename traj_t::TrackStateProxy>::iterator,
         typename std::vector<typename traj_t::TrackStateProxy>::iterator>>;
 
-    ACTS_VERBOSE("Invoked MeasurementSelector");
+    TRACCC_VERBOSE("Invoked MeasurementSelector");
 
     // Return error if no measurement
     if (candidates.empty()) {
@@ -174,7 +174,7 @@ class MeasurementSelector {
     // measurement with the best chi2 and tag it as an outlier
     if (candidates.begin() == trackStateIterEnd) {
       const auto bestIt = std::next(candidates.begin(), minIndex);
-      ACTS_VERBOSE(
+      TRACCC_VERBOSE(
           "No measurement candidate. Return an outlier measurement chi2="
           << bestIt->chi2());
       isOutlier = true;
@@ -197,7 +197,7 @@ class MeasurementSelector {
       trackStateIterEnd = std::next(candidates.begin(), numMeasurementsCut);
     }
 
-    ACTS_VERBOSE("Number of selected measurements: "
+    TRACCC_VERBOSE("Number of selected measurements: "
                  << std::distance(candidates.begin(), trackStateIterEnd)
                  << ", max: " << numMeasurementsCut);
 
@@ -227,7 +227,7 @@ class MeasurementSelector {
     if (bin >= cuts.size()) {
       bin = cuts.size() - 1;
     }
-    ACTS_VERBOSE("Variable cut for eta=" << eta << ": " << cuts[bin]);
+    TRACCC_VERBOSE("Variable cut for eta=" << eta << ": " << cuts[bin]);
     return cuts[bin];
   }
 

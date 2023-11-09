@@ -8,23 +8,23 @@
 
 #pragma once
 
-#include "Acts/Definitions/Algebra.hpp"
-#include "Acts/Definitions/Tolerance.hpp"
-#include "Acts/Geometry/GeometryContext.hpp"
-#include "Acts/Geometry/Polyhedron.hpp"
-#include "Acts/Surfaces/BoundaryCheck.hpp"
-#include "Acts/Surfaces/InfiniteBounds.hpp"
-#include "Acts/Surfaces/PlanarBounds.hpp"
-#include "Acts/Surfaces/Surface.hpp"
-#include "Acts/Utilities/BinningType.hpp"
-#include "Acts/Utilities/Result.hpp"
+#include "traccc/definitions/Algebra.hpp"
+#include "traccc/definitions/Tolerance.hpp"
+#include "traccc/geometry/GeometryContext.hpp"
+#include "traccc/geometry/Polyhedron.hpp"
+#include "traccc/Surfaces/BoundaryCheck.hpp"
+#include "traccc/Surfaces/InfiniteBounds.hpp"
+#include "traccc/Surfaces/PlanarBounds.hpp"
+#include "traccc/Surfaces/Surface.hpp"
+#include "traccc/utils/BinningType.hpp"
+#include "traccc/utils/Result.hpp"
 
 #include <cstddef>
 #include <limits>
 #include <memory>
 #include <string>
 
-namespace Acts {
+namespace traccc {
 
 class DetectorElementBase;
 class PlanarBounds;
@@ -190,7 +190,7 @@ class PlaneSurface : public Surface {
   SurfaceMultiIntersection intersect(
       const GeometryContext& gctx, const Vector3& position,
       const Vector3& direction, const BoundaryCheck& bcheck = false,
-      ActsScalar tolerance = s_onSurfaceTolerance) const final;
+      TracccScalar tolerance = s_onSurfaceTolerance) const final;
 
   /// Return a Polyhedron for the surfaces
   ///
@@ -214,7 +214,7 @@ class PlaneSurface : public Surface {
   ///
   /// @return Derivative of bound local position w.r.t. position in local 3D
   /// cartesian coordinates
-  ActsMatrix<2, 3> localCartesianToBoundLocalDerivative(
+  TracccMatrix<2, 3> localCartesianToBoundLocalDerivative(
       const GeometryContext& gctx, const Vector3& position) const final;
 
  protected:
@@ -224,4 +224,4 @@ class PlaneSurface : public Surface {
  private:
 };
 
-}  // end of namespace Acts
+}  // namespace
