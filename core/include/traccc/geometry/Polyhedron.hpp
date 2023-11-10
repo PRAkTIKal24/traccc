@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "traccc/gefinitions/Algebra.hpp"
+#include "traccc/definitions/Algebra.hpp"
 #include "traccc/geometry/Extent.hpp"
 
 #include <cstddef>
