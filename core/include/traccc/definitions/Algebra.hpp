@@ -47,11 +47,11 @@ namespace traccc {
 /// Common scalar (floating point type used for the default algebra types.
 ///
 /// Defaults to `double` but can be customized by the user.
-#ifdef TRACCC_CUSTOM_SCALARTYPE
-using TracccScalar = TRACCC_CUSTOM_SCALARTYPE;
-#else
+// #ifdef TRACCC_CUSTOM_SCALARTYPE
+// using TracccScalar = TRACCC_CUSTOM_SCALARTYPE;
+// #else
 using TracccScalar = double;
-#endif
+// #endif
 
 template <unsigned int kSize>
 using TracccVector = Eigen::Matrix<TracccScalar, kSize, 1>;
@@ -106,4 +106,4 @@ using Transform3 = Eigen::Transform<TracccScalar, 3, Eigen::Affine>;
 
 /// @}
 
-}  // namespace Acts
+}  // namespace
