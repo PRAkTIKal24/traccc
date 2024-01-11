@@ -26,6 +26,15 @@
 #include "traccc/seeding/seeding_algorithm.hpp"
 #include "traccc/seeding/track_params_estimation.hpp"
 
+// Acts include(s).
+#include "ActsExamples/GenericDetector/GenericDetector.hpp"
+
+#include "Acts/Geometry/ILayerBuilder.hpp"
+#include "Acts/Geometry/TrackingGeometry.hpp"
+#include "ActsExamples/GenericDetector/BuildGenericDetector.hpp"
+#include "ActsExamples/GenericDetector/GenericDetectorElement.hpp"
+#include "ActsExamples/GenericDetector/ProtoLayerCreatorT.hpp"
+
 // VecMem include(s).
 #include <vecmem/memory/cuda/device_memory_resource.hpp>
 #include <vecmem/memory/cuda/host_memory_resource.hpp>
@@ -98,6 +107,30 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     // }
 
     traccc::performance::timing_info elapsedTimes;
+
+    // Instantiate GenericDetector as part of ACTS setup
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    //Learn how to set up inputs for setting up the GenericDet - basically read configs
+
+    // const Config& cfg,
+    // std::shared_ptr<const Acts::IMaterialDecorator> mdecorator)
+    // -> std::pair<TrackingGeometryPtr, ContextDecorators> {
+    DetectorElement::ContextType nominalContext;
+    // Return the generic detector
+    TrackingGeometryPtr gGeometry =
+      ActsExamples::Generic::buildDetector<DetectorElement>(
+          nominalContext, detectorStore, cfg.buildLevel, std::move(mdecorator),
+          cfg.buildProto, cfg.surfaceLogLevel, cfg.layerLogLevel,
+          cfg.volumeLogLevel);
+    ContextDecorators gContextDecorators = {};
+    // return the pair of geometry and empty decorators
+    return std::make_pair<TrackingGeometryPtr, ContextDecorators>(
+      std::move(gGeometry), std::move(gContextDecorators));
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
 
     // Loop over events
     for (unsigned int event = common_opts.skip;
