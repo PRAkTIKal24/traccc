@@ -127,7 +127,7 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
           cfg.volumeLogLevel);
     ContextDecorators gContextDecorators = {};
     // return the pair of geometry and empty decorators
-    return std::make_pair<TrackingGeometryPtr, ContextDecorators>(
+    auto GenericDetector =  std::make_pair<TrackingGeometryPtr, ContextDecorators>(
       std::move(gGeometry), std::move(gContextDecorators));
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
