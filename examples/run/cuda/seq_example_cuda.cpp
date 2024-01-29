@@ -51,6 +51,17 @@
 #include "ActsExamples/EventData/Track.hpp"
 #include "ActsExamples/TrackFinding/TrackFindingAlgorithm.hpp"
 
+#include "Acts/Definitions/Algebra.hpp"
+#include "Acts/EventData/ProxyAccessor.hpp"
+#include "Acts/Surfaces/PerigeeSurface.hpp"
+#include "Acts/Surfaces/Surface.hpp"
+#include "Acts/TrackFitting/KalmanFitter.hpp"
+#include "Acts/Utilities/Delegate.hpp"
+#include "ActsExamples/EventData/Measurement.hpp"
+#include "ActsExamples/EventData/MeasurementCalibration.hpp"
+#include "ActsExamples/Framework/AlgorithmContext.hpp"
+#include "ActsExamples/Framework/ProcessCode.hpp"
+
 // VecMem include(s).
 #include <vecmem/memory/cuda/device_memory_resource.hpp>
 #include <vecmem/memory/cuda/host_memory_resource.hpp>
@@ -69,6 +80,13 @@
 #include <utility>
 #include <vector>
 
+#include <cmath>
+#include <functional>
+#include <optional>
+#include <ostream>
+#include <stdexcept>
+#include <system_error>
+
 
 namespace po = boost::program_options;
 
@@ -80,8 +98,7 @@ using Smoother = Acts::GainMatrixSmoother;
 using Stepper = Acts::EigenStepper<>;
 using Navigator = Acts::Navigator;
 using Propagator = Acts::Propagator<Stepper, Navigator>;
-using CKF =
-    Acts::CombinatorialKalmanFilter<Propagator, Acts::VectorMultiTrajectory>;
+using CKF = Acts::CombinatorialKalmanFilter<Propagator, Acts::VectorMultiTrajectory>;
 
 using TrackContainer =
     Acts::TrackContainer<Acts::VectorTrackContainer,
