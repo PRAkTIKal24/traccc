@@ -342,6 +342,28 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                             {0.f, 0.f, finder_config.bFieldInZ});
             }  // stop measuring track params cpu timer
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            if (run_cpu) {
+                for (std::size_t iseed = 0; iseed < initialParameters.size(); ++iseed) {
+                    // Clear trackContainerTemp and trackStateContainerTemp
+                    tracksTemp.clear();
+
+                    auto result =
+                        (*m_cfg.findTracks)(initialParameters.at(iseed), options, tracksTemp);
+                    m_nTotalSeeds++;
+                    nSeed++;
+
+                    if (!result.ok()) {
+                    m_nFailedSeeds++;
+                    std::cout << "Track finding failed for seed " << iseed << " with error"
+                                                                << result.error();
+                    continue;
+                }
+            }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
         }  // Stop measuring wall time
 
         /*----------------------------------
