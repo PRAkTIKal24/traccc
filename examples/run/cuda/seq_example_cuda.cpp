@@ -185,6 +185,31 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
     auto GenericDetector =  std::make_pair<TrackingGeometryPtr, ContextDecorators>(
       std::move(gGeometry), std::move(gContextDecorators));
 
+    // Set the CombinatorialKalmanFilter options
+    // Find how to initialize ctx
+    ActsExamples::TrackFindingAlgorithm::TrackFinderOptions options(
+      ctx.geoContext, ctx.magFieldContext, ctx.calibContext, slAccessorDelegate,
+      extensions, pOptions, pSurface.get());
+    options.smoothingTargetSurfaceStrategy =
+    Acts::CombinatorialKalmanFilterTargetSurfaceStrategy::first;
+
+    // Initializing variables required to execute track finding
+    auto trackContainer = std::make_shared<Acts::VectorTrackContainer>();
+    auto trackStateContainer = std::make_shared<Acts::VectorMultiTrajectory>();
+
+    auto trackContainerTemp = std::make_shared<Acts::VectorTrackContainer>();
+    auto trackStateContainerTemp =
+      std::make_shared<Acts::VectorMultiTrajectory>();
+
+    TrackContainer tracks(trackContainer, trackStateContainer);
+    TrackContainer tracksTemp(trackContainerTemp, trackStateContainerTemp);
+
+    tracks.addColumn<unsigned int>("trackGroup");
+    tracksTemp.addColumn<unsigned int>("trackGroup");
+    Acts::ProxyAccessor<unsigned int> seedNumber("trackGroup");
+
+    unsigned int nSeed = 0;
+
     // Instantiate Track Finding function
 
     Stepper stepper(std::move(magneticField));
@@ -362,12 +387,12 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             if (run_cpu) {
-                for (std::size_t iseed = 0; iseed < initialParameters.size(); ++iseed) {
+                for (std::size_t iseed = 0; iseed < params.size(); ++iseed) {
                     // Clear trackContainerTemp and trackStateContainerTemp
                     tracksTemp.clear();
 
                     auto result =
-                        (*m_cfg.findTracks)(initialParameters.at(iseed), options, tracksTemp);
+                        (*tf.findTracks)(params.at(iseed), options, tracksTemp);
                     m_nTotalSeeds++;
                     nSeed++;
 
