@@ -186,7 +186,8 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
       std::move(gGeometry), std::move(gContextDecorators));
 
     // Set the CombinatorialKalmanFilter options
-    // Find how to initialize ctx
+    const ActsExamples::AlgorithmContext& ctx
+
     ActsExamples::TrackFindingAlgorithm::TrackFinderOptions options(
       ctx.geoContext, ctx.magFieldContext, ctx.calibContext, slAccessorDelegate,
       extensions, pOptions, pSurface.get());
@@ -396,11 +397,23 @@ int seq_run(const traccc::full_tracking_input_config& i_cfg,
                     m_nTotalSeeds++;
                     nSeed++;
 
-                    if (!result.ok()) {
+                    if (!resul;t.ok()) {
                     m_nFailedSeeds++;
                     std::cout << "Track finding failed for seed " << iseed << " with error"
                                                                 << result.error();
                     continue;
+                    }
+                    auto& tracksForSeed = result.value();
+                    for (auto& track : tracksForSeed) {
+                      // Set the seed number, this number decrease by 1 since the seed number
+                      // has already been updated
+                      seedNumber(track) = nSeed - 1;
+                      if (!m_trackSelector.has_value() ||
+                          m_trackSelector->isValidTrack(track)) {
+                        auto destProxy = tracks.getTrack(tracks.addTrack());
+                        destProxy.copyFrom(track, true);  // make sure we copy track states!
+                        }
+                    }
                 }
             }
 
