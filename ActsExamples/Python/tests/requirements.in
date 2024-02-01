@@ -1,0 +1,7 @@
+pytest
+pytest-check
+uproot
+awkward
+pytest-rerunfailures
+pytest-xdist
+pyyaml
